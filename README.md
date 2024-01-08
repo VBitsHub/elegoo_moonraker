@@ -4,6 +4,9 @@ Backup your original ~/moonraker/moonraker/components/file_manager/metadata.py b
 
 You should now see the correct information and thumbnails in fluidd and the elegoo touchscreen. This does not update existing files, only files processed after the update.
 
+Update 1/8/2024: Finally had time to install v1.9.0, didn't work for me out of box like it did the few that messaged me, but was able to locate the issue.
+                 Updated metadata.py to support searching for gimage and simage in footer_data to fix touchscreen not showing. You must select ColPic for "Format of G-Code thumbnails" and define the G-Code Thumbnail sizes as: 200x200, 160x160. You need to add BOTH separated with a comma.
+                 
 Update 1/6/2024: NeptuneTSFix is no longer needed if using version 1.9.0+ of OrcaSlicer. Select ColPic for "Format of G-Code thumbnails"
 
 If you wish to see the thumbnail on the touchscreen, download the neptuneTSfix.exe under releases and add it to post processing for Prusa ~~and/or Orca~~.
