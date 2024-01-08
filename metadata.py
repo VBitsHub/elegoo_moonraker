@@ -482,12 +482,16 @@ class PrusaSlicer(BaseSlicer):
     
     #process encoded pixel data for elegoo touchscreen
     def parse_gimage(self) -> Optional[str]:
+        if not _regex_find_string_znp(r";gimage:", self.header_data):
+            return _regex_find_string_znp(r";gimage:", self.footer_data)
         return _regex_find_string_znp(
-            r";gimage:", self.header_data)
+                    r";gimage:", self.header_data)
 
     def parse_simage(self) -> Optional[str]:
+        if not _regex_find_string_znp(r";simage:", self.header_data):
+            return _regex_find_string_znp(r";simage:", self.footer_data)
         return _regex_find_string_znp(
-            r";simage:", self.header_data)
+                    r";simage:", self.header_data)
 
     #vbits process thumbnails end
 
