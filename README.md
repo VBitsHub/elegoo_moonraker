@@ -3,6 +3,7 @@ Modified elegoo neptune 4 max's moonraker to support thumbnails for Prusa slicer
 Backup your original ~/moonraker/moonraker/components/file_manager/metadata.py before copying this version over. After copying the file over using winscp or any other sftp software, reboot the machine.
 
 You should now see the correct information and thumbnails in fluidd and the elegoo touchscreen. This does not update existing files, only files processed after the update.
+
 Update 1/9/2024: Added an updater than can be run on the printer to update the metadata.py with the current one on github if needed. Just place in your /home/mks/ folder. You may need to run "chmod 777 update_metadata.py" afterwards if you cannot execute it.
 
 Update 1/8/2024: Finally had time to install v1.9.0, didn't work for me out of box like it did the few that messaged me, but was able to locate the issue.
