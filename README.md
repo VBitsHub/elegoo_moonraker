@@ -1,8 +1,23 @@
 # elegoo_moonraker
-Modified elegoo neptune 4 max's moonraker to support thumbnails for Prusa slicer, add support for Orca slicer
+Modified elegoo neptune 4 plus/max's (works with N4 and N4Pro) moonraker to support thumbnails for Prusa slicer, add support for Orca slicer, Slic3r, Slic3rPE, SuperSlicer
+*No longer requires post-processing for PrusaSlicer, OrcaSlicer, and SuperSlicer
+
 Backup your original ~/moonraker/moonraker/components/file_manager/metadata.py before copying this version over. After copying the file over using winscp or any other sftp software, reboot the machine.
 
 You should now see the correct information and thumbnails in fluidd and the elegoo touchscreen. This does not update existing files, only files processed after the update.
+
+Update 1/19/2024: Updated code to use Pillow instead of PyQT6 so people do not have to build/install PyQT6
+			      Bug fix for thumbnail miniature 32x32 creation.
+				  Merged slic3r and slic3rPE
+				  Added Support for SuperSlicer
+				  Required Files to copy to machine are: metadata.py and lib_col_pic.py
+				  Select PNG for output and put any resolution for the image. For example: 300x300 or 500x500
+			      Metadata.py will do the rest.
+				  For OrcaSlicer you can select either PNG or colpic (colpic requires both 200x200, 160x160)
+				  Updated update_metadata.sh to reflect adding lib_col_pic.py
+
+Update 1/18/2024: Updated to process PNG images for touchscreen on elegoo neptune 4. Prusa and Orca thumbnails no longer need to run any post-processing scripts, select PNG for output and use any resolution. For example 300x300 or 500x500.
+				  Requires building/installing PyQT6 for armbian.
 
 Update 1/15/2024: PR and merge has been completed https://github.com/SoftFever/OrcaSlicer/pull/3647, should be available in future updates to OrcaSlicer. 
 
@@ -17,3 +32,4 @@ Update 1/6/2024: NeptuneTSFix is no longer needed if using version 1.9.0+ of Orc
 
 If you wish to see the thumbnail on the touchscreen, download the neptuneTSfix.exe under releases and add it to post processing for Prusa ~~and/or Orca~~.
 NeptuneTSFix is based off of Molodos Neptune Cura
+lib_col_pic.py was used from https://github.com/Molodos/ElegooNeptuneThumbnails-Prusa
