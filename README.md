@@ -4,6 +4,9 @@ Modified elegoo neptune 4 plus/max's (works with N4 and N4Pro) moonraker to supp
 
 Backup your original ~/moonraker/moonraker/components/file_manager/metadata.py before copying this version over. **Copy both metadata.py and lib_col_pic.py** to the ~/moonraker/moonraker/components/file_manager/ folder.  After copying the file over using winscp or any other sftp software, reboot the machine.
 
+*Note: For those that may not know. username: **mks** and password: **makerbase**
+
+
 You should now see the correct information and thumbnails in fluidd and the elegoo touchscreen. This does not update existing files, only files processed after the update.
 
 ![orca_1](https://github.com/VBitsHub/elegoo_moonraker/assets/62845219/207207ef-c9b5-4514-9a51-ad72684ecd93)
