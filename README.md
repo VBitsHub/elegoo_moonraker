@@ -2,7 +2,7 @@
 Modified elegoo neptune 4 plus/max's (works with N4 and N4Pro) moonraker to support thumbnails for Prusa slicer, add support for Orca slicer, Slic3r, Slic3rPE, SuperSlicer
 *No longer requires post-processing for PrusaSlicer, OrcaSlicer, and SuperSlicer
 
-Backup your original ~/moonraker/moonraker/components/file_manager/metadata.py before copying this version over. **Copy both metadata.py and lib_col_pic.py** to the ~/moonraker/moonraker/components/file_manager/metadata.py folder.  After copying the file over using winscp or any other sftp software, reboot the machine.
+Backup your original ~/moonraker/moonraker/components/file_manager/metadata.py before copying this version over. **Copy both metadata.py and lib_col_pic.py** to the ~/moonraker/moonraker/components/file_manager/ folder.  After copying the file over using winscp or any other sftp software, reboot the machine.
 
 You should now see the correct information and thumbnails in fluidd and the elegoo touchscreen. This does not update existing files, only files processed after the update.
 
