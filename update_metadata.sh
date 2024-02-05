@@ -23,11 +23,12 @@ if diff /home/mks/temp/lib_col_pic.py "${local_file_libcolpic}" >/dev/null; then
 	echo "lib_col_pic.py is up to date..."
 else
 	echo "Updating lib_col_pic.py..."
-	backup_file="${local_file_libcolpic}.${bacup_date}"
+	backup_file="${local_file_libcolpic}.${backup_date}"
 	mv "${local_file_libcolpic}" "${backup_file}"
 	
 	mv /home/mks/temp/lib_col_pic.py "${local_file_libcolpic}"
 	echo "Lib_col_pic.py has been updated..."
+fi
 
 # Compare the downloaded file with the local file
 if diff /home/mks/temp/metadata.py "${local_file}" >/dev/null; then
