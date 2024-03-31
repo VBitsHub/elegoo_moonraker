@@ -20,9 +20,9 @@ import uuid
 from PIL import Image
 import platform
 import lib_col_pic
-#from PyQt6.QtCore import Qt
-#from PyQt6.QtGui import QImage
 from PIL import Image
+from PIL import ImageDraw
+from PIL import ImageFont
 from io import BytesIO
 from array import array
 
@@ -494,35 +494,16 @@ class PrusaSlicer(BaseSlicer):
     
     #process encoded pixel data for elegoo touchscreen
     def parse_gimage(self) -> Optional[str]:
-        for data in [self.header_data, self.footer_data]:
-            thumb_matches: List[str] = re.findall(
-                r"; thumbnail begin[;/\+=\w\s]+?; thumbnail end", data)
-            if thumb_matches:
-                break
-        else:
-            return None
-        
-        parsed_matches: List[Dict[str, Any]] = []
-        
-        for match in thumb_matches:
-            lines = re.split(r"\r?\n", match.replace('; ', ''))
-            info = _regex_find_ints(r".*", lines[0])
-            data = "".join(lines[1:-1])
-            if len(info) != 3:
-                log_to_stderr(
-                    f"MetadataError: Error parsing thumbnail"
-                    f" header: {lines[0]}")
-                continue
-            if len(data) != info[2]:
-                log_to_stderr(
-                    f"MetadataError: Thumbnail Size Mismatch: "
-                    f"detected {info[2]}, actual {len(data)}")
-                continue
-        
-        #thumbnail = QImage()
-        #thumbnail = (base64.b64decode(data.encode()))
-        #thumbnail.loadFromData(base64.decodebytes(bytes(data, "UTF-8")), "PNG")
+        data = _getImage(self)
         thumbnail = Image.open(BytesIO(base64.b64decode(data.encode()))).convert('RGBA')
+        h,w = thumbnail.size
+        cfont = ImageFont.truetype(r"/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 22)
+        img = ImageDraw.Draw(thumbnail)
+        img.text((5, 10), "$" + str(_regex_find_first(r"; total filament cost = (\d+\.\d*)", self.footer_data)), fill=(255,255,255), font=cfont, align="right")
+        img.text((5, h-40), str(_regex_find_first(r"total\sfilament\sused\s\[g\]\s=\s(\d+\.\d*)", self.footer_data)) + "g", fill=(255,255,255), font=cfont, align="right")
+        img.text((w-110, 10), str(_regex_find_first(r"; max_z_height: (\d+\.\d*)", self.header_data)) + "mm", fill=(255,255,255), font=cfont, align="right")
+        #thumbnail.show()
+        
         if not _regex_find_string_znp(r";gimage:", self.header_data) and not _regex_find_string_znp(r";gimage:", self.footer_data):
             return _parse_colpic(thumbnail, 200, 200, "gimage")            
         elif not _regex_find_string_znp(r";gimage:", self.header_data):
@@ -531,35 +512,15 @@ class PrusaSlicer(BaseSlicer):
                     r";gimage:", self.header_data)
 
     def parse_simage(self) -> Optional[str]:
-        for data in [self.header_data, self.footer_data]:
-            thumb_matches: List[str] = re.findall(
-                r"; thumbnail begin[;/\+=\w\s]+?; thumbnail end", data)
-            if thumb_matches:
-                break
-        else:
-            return None
-        
-        parsed_matches: List[Dict[str, Any]] = []
-        
-        for match in thumb_matches:
-            lines = re.split(r"\r?\n", match.replace('; ', ''))
-            info = _regex_find_ints(r".*", lines[0])
-            data = "".join(lines[1:-1])
-            if len(info) != 3:
-                log_to_stderr(
-                    f"MetadataError: Error parsing thumbnail"
-                    f" header: {lines[0]}")
-                continue
-            if len(data) != info[2]:
-                log_to_stderr(
-                    f"MetadataError: Thumbnail Size Mismatch: "
-                    f"detected {info[2]}, actual {len(data)}")
-                continue
-        
-        #thumbnail = QImage()
-        #thumbnail = (base64.b64decode(data.encode()))        
-        #thumbnail.loadFromData(base64.decodebytes(bytes(data, "UTF-8")), "PNG")
+        data = _getImage(self)
         thumbnail = Image.open(BytesIO(base64.b64decode(data.encode()))).convert('RGBA')
+        h,w = thumbnail.size
+        cfont = ImageFont.truetype(r"/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 22)
+        img = ImageDraw.Draw(thumbnail)
+        img.text((5, 10), "$" + str(_regex_find_first(r"; total filament cost = (\d+\.\d*)", self.footer_data)), fill=(255,255,255), font=cfont, align="right")
+        img.text((5, h-40), str(_regex_find_first(r"total\sfilament\sused\s\[g\]\s=\s(\d+\.\d*)", self.footer_data)) + "g", fill=(255,255,255), font=cfont, align="right")
+        img.text((w-110, 10), str(_regex_find_first(r"; max_z_height: (\d+\.\d*)", self.header_data)) + "mm", fill=(255,255,255), font=cfont, align="right")
+        
         if not _regex_find_string_znp(r";simage:", self.header_data) and not _regex_find_string_znp(r";simage:", self.footer_data):
             return _parse_colpic(thumbnail, 160, 160, "simage")            
         elif not _regex_find_string_znp(r";simage:", self.header_data):
@@ -569,49 +530,6 @@ class PrusaSlicer(BaseSlicer):
 
 
     #vbits process thumbnails end
-
-#vbits integrated Slic3r and Slic3rPE with Prusa Slicer Code
-
-#class Slic3rPE(PrusaSlicer):
-#    def check_identity(self, data: str) -> Optional[Dict[str, str]]:
-#        match = re.search(r"Slic3r\sPrusa\sEdition\s(.*)\son", data)
-#        if match:
-#            return {
-#                'slicer': "Slic3r PE",
-#                'slicer_version': match.group(1)
-#            }
-#        return None
-
-#    def parse_filament_total(self) -> Optional[float]:
-#        return _regex_find_first(
-#            r"filament\sused\s=\s(\d+\.\d+)mm", self.footer_data)
-
-#    def parse_thumbnails(self) -> Optional[List[Dict[str, Any]]]:
-#        return None
-
-#class Slic3r(Slic3rPE):
-#    def check_identity(self, data: str) -> Optional[Dict[str, str]]:
-#        match = re.search(r"Slic3r\s(\d.*)\son", data)
-#        if match:
-#            return {
-#                'slicer': "Slic3r",
-#                'slicer_version': match.group(1)
-#            }
-#        return None
-
-#    def parse_filament_total(self) -> Optional[float]:
-#        filament = _regex_find_first(
-#            r";\sfilament\_length\_m\s=\s(\d+\.\d*)", self.footer_data)
-#        if filament is not None:
-#            filament *= 1000
-#        return filament
-
-#    def parse_filament_weight_total(self) -> Optional[float]:
-#        return _regex_find_first(
-#            r";\sfilament\smass\_g\s=\s(\d+\.\d*)", self.footer_data)
-
-#    def parse_estimated_time(self) -> Optional[float]:
-#        return None
 
 class Cura(BaseSlicer):
     def check_identity(self, data: str) -> Optional[Dict[str, str]]:
@@ -1017,62 +935,64 @@ SUPPORTED_DATA = [
     'filament_weight_total',
     'thumbnails']
 
-    #convert png to colpic image
-    #rewritten to use PILLOW instead of PyQT6
-#def _parse_colpic(img: QImage, width: int, height: int,img_type: str) -> Optional[str]:
+    #vbits getImage
+def _getImage(self) -> Optional[str]:
+    for data in [self.header_data, self.footer_data]:
+        thumb_matches: List[str] = re.findall(
+            r"; thumbnail begin[;/\+=\w\s]+?; thumbnail end", data)
+        if thumb_matches:
+            break
+    else:
+        return None
+    
+    parsed_matches: List[Dict[str, Any]] = []
+   
+    for match in thumb_matches:
+        lines = re.split(r"\r?\n", match.replace('; ', ''))
+        info = _regex_find_ints(r".*", lines[0])
+        data = "".join(lines[1:-1])
+        if len(info) != 3:
+            log_to_stderr(
+                f"MetadataError: Error parsing thumbnail"
+                f" header: {lines[0]}")
+            continue
+        if len(data) != info[2]:
+            log_to_stderr(
+                f"MetadataError: Thumbnail Size Mismatch: "
+                f"detected {info[2]}, actual {len(data)}")
+            continue
+    return data
+
+    #vbits convert png to colpic image    
 def _parse_colpic(img: Image, width: int, height: int,img_type: str) -> Optional[str]:
     img_type = f";{img_type}:"
 
     result = ""
-    #b_image = img.scaled(width, height, Qt.AspectRatioMode.KeepAspectRatio)
     background = Image.new('RGBA', img.size, (46,51,72))
     alpha_composite = Image.alpha_composite(background, img)
     b_image = alpha_composite.resize((width, height))
     pixels = b_image.load()
     img_size = (width, height)
     color16 = array('H')
-    #rgb_b_image = b_image.convert('RGB')
-    #rgb_b_image.save('test.png')
     try:
         for i in range(img_size[0]):
             for j in range(img_size[1]):
-                #pColor = b_image.getpixel((j,i))    
                 pColor = pixels[j,i]
                 r = pColor[0] >> 3
                 g = pColor[1] >> 2
                 b = pColor[2] >> 3
                 a = pColor[3]
-                #if a < 255:
-                #    r = 46 >> 3
-                #    g = 51 >> 2
-                #    b = 72 >> 3
                 rgb = (r << 11) | (g << 5) | b
                 color16.append(rgb)
         output_data = bytearray(img_size[0] * img_size[1] * 10)
         lib_col_pic.ColPic_EncodeStr(color16, img_size[1], img_size[0], output_data,
                                                   img_size[1] * img_size[0] * 10, 1024)
 
-        #data0 = str(output_data).replace('\\x00', '')
-        #data1 = data0[2:len(data0) - 2]
-        #each_max = 1024 - 8 - 1
-        #max_line = int(len(data1) / each_max)
-        #append_len = each_max - 3 - int(len(data1) % each_max) + 10
         j = 0
         for i in range(len(output_data)):
             if output_data[i] != 0:
-                #if j == max_line * each_max:
-                #    result += '\r;' + img_type + chr(output_data[i])
-                #elif j == 0:
-                #    result += img_type + chr(output_data[i])
-                #elif j % each_max == 0:
-                #    result += '\r' + img_type + chr(output_data[i])
-                #else:
-                #    result += chr(output_data[i])
                 result += chr(output_data[i])
                 j += 1
-        #result += '\r;'
-        #for m in range(append_len):
-        #    result += '0'
 
     except Exception as e:
         raise e
